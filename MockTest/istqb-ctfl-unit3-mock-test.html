@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ISTQB CTFL v4.0 – Unit 3: Static Testing Mock Test</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0b1120;font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;padding:20px 16px 60px;display:flex;flex-direction:column;align-items:center;color:#e2e8f0}
+  #app{width:100%;max-width:760px}
+
+  /* ── MENU ── */
+  .hero-card{background:#111827;border:1px solid #1e293b;border-radius:16px;padding:40px 32px;text-align:center}
+  .badge{display:inline-block;background:#1e3a5f;color:#60a5fa;font-size:11px;font-weight:700;letter-spacing:2px;padding:4px 14px;border-radius:20px;margin-bottom:16px;text-transform:uppercase}
+  .hero-title{color:#f1f5f9;font-size:28px;font-weight:800;margin-bottom:8px}
+  .hero-sub{color:#64748b;font-size:14px;margin-bottom:28px}
+  .unit-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:28px}
+  .unit-card{border:1.5px solid;border-radius:10px;padding:14px 16px;display:flex;align-items:center;gap:10px;background:#0f172a}
+  .unit-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+  .unit-label{color:#e2e8f0;font-size:13px;font-weight:600;flex:1;text-align:left}
+  .unit-count{color:#64748b;font-size:12px}
+  .btn-row{display:flex;flex-direction:column;gap:10px;margin-bottom:20px}
+  .btn{padding:13px 20px;border-radius:10px;border:none;color:#fff;font-weight:700;font-size:14px;cursor:pointer;letter-spacing:.3px;font-family:inherit;transition:opacity .2s}
+  .btn:hover{opacity:.85}
+  .btn-full{padding:14px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;font-weight:700;font-size:15px;cursor:pointer;font-family:inherit}
+  .btn-full:hover{opacity:.9}
+  .legend{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+  .bloom-tag{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;letter-spacing:.5px}
+
+  /* ── TEST SCREEN ── */
+  .top-bar{display:flex;justify-content:space-between;align-items:center;width:100%;margin-bottom:8px;padding:0 4px;flex-wrap:wrap;gap:8px}
+  .top-left{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+  .top-right{display:flex;align-items:center;gap:12px}
+  .unit-tag{color:#94a3b8;font-size:13px;font-weight:600}
+  .section-tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:12px}
+  .timer{color:#94a3b8;font-size:14px;font-family:monospace}
+  .progress-label{color:#e2e8f0;font-weight:700;font-size:14px}
+  .progress-bar{height:4px;background:#1e293b;border-radius:4px;width:100%;margin-bottom:10px}
+  .progress-fill{height:100%;background:linear-gradient(90deg,#3b82f6,#8b5cf6);border-radius:4px;transition:width .3s}
+
+  /* dot nav */
+  .dot-row{display:flex;flex-wrap:wrap;gap:6px;width:100%;margin-bottom:14px}
+  .dot{width:30px;height:30px;border-radius:6px;font-size:11px;font-weight:700;cursor:pointer;border:2px solid transparent;transition:all .15s;font-family:inherit}
+
+  /* question card */
+  .q-card{background:#111827;border:1px solid #1e293b;border-radius:14px;padding:24px 28px;width:100%;margin-bottom:16px}
+  .q-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
+  .q-topic{color:#64748b;font-size:12px;font-weight:600;letter-spacing:.4px}
+  .flag-btn{background:none;border:none;cursor:pointer;font-size:12px;font-weight:600;font-family:inherit}
+  .q-text{color:#f1f5f9;font-size:16px;font-weight:600;line-height:1.6;margin-bottom:20px}
+  .option-list{display:flex;flex-direction:column;gap:10px}
+  .option{padding:13px 16px;border-radius:10px;text-align:left;font-size:14px;cursor:pointer;display:flex;align-items:flex-start;gap:10px;line-height:1.5;transition:all .15s;font-family:inherit;width:100%;background:transparent;border:1.5px solid #334155;color:#e2e8f0}
+  .option:hover:not(.opt-correct):not(.opt-wrong):not(.opt-selected){border-color:#4b5563;background:#ffffff08}
+  .opt-letter{font-weight:800;min-width:22px;color:#60a5fa}
+  .opt-selected{background:#3b82f618;border-color:#3b82f6;color:#e2e8f0}
+  .opt-correct{background:#22c55e18!important;border-color:#22c55e!important;color:#22c55e!important}
+  .opt-wrong{background:#ef444418!important;border-color:#ef4444!important;color:#ef4444!important}
+  .opt-mark{margin-left:auto;font-weight:900}
+  .expl-btn{background:none;border:1px solid #1e293b;color:#60a5fa;padding:6px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-weight:600;margin-top:12px;font-family:inherit}
+  .expl-box{background:#0f172a;border:1px solid #1e3a5f;border-radius:8px;padding:12px 14px;color:#94a3b8;font-size:13px;line-height:1.6;margin-top:10px;display:none}
+  .expl-box.visible{display:block}
+
+  /* nav row */
+  .nav-row{display:flex;justify-content:space-between;align-items:center;width:100%;gap:12px}
+  .nav-btn{background:#1e293b;border:none;color:#e2e8f0;padding:11px 22px;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:opacity .2s}
+  .nav-btn:hover{opacity:.85}
+  .nav-btn:disabled{opacity:.35;cursor:default}
+  .nav-center{flex:1;text-align:center;font-size:13px;color:#94a3b8}
+
+  /* ── RESULT ── */
+  .result-card{background:#111827;border:1px solid #1e293b;border-radius:16px;padding:40px 32px;width:100%;max-width:600px;text-align:center}
+  .result-emoji{font-size:48px;margin-bottom:8px}
+  .result-title{color:#f1f5f9;font-size:22px;font-weight:800;margin-bottom:6px}
+  .score-big{font-size:56px;font-weight:900;margin-bottom:4px}
+  .pct-line{color:#64748b;font-size:14px;margin-bottom:12px}
+  .pass-tag{display:inline-block;padding:5px 16px;border-radius:20px;font-weight:800;font-size:13px;letter-spacing:1px;margin-bottom:24px}
+  .sec-breakdown{display:flex;flex-direction:column;gap:14px;margin-bottom:28px;text-align:left}
+  .sec-row{display:flex;align-items:center;gap:12px;font-size:13px}
+  .sec-name{min-width:220px}
+  .sec-bar{flex:1;height:8px;background:#1e293b;border-radius:4px;overflow:hidden}
+  .sec-fill{height:100%;border-radius:4px;transition:width .6s ease}
+  .sec-score{color:#94a3b8;min-width:50px;text-align:right}
+  .result-btns{display:flex;flex-direction:column;gap:10px}
+
+  @media(max-width:500px){
+    .hero-card,.q-card,.result-card{padding:24px 16px}
+    .unit-grid{grid-template-columns:1fr}
+    .q-text{font-size:14px}
+    .option{font-size:13px}
+  }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ─── DATA ────────────────────────────────────────────────────────────────────
+const questions = [
+  {id:1,section:"3.1",subtopic:"What is Static Testing",bloom:"K1",
+   text:"Which of the following BEST describes static testing?",
+   options:["A. Executing the software to find defects at runtime","B. Examining work products without executing the code","C. Running automated regression suites against a build","D. Monitoring system behaviour under load conditions"],
+   answer:1,explanation:"Static testing examines work products (code, requirements, design, etc.) without actually executing the software. Dynamic testing, in contrast, involves code execution."},
+  {id:2,section:"3.1",subtopic:"Work Products Examined",bloom:"K2",
+   text:"A team is examining user stories, acceptance criteria, and architecture diagrams BEFORE any code is written. Which type of testing are they performing?",
+   options:["A. Dynamic testing","B. Integration testing","C. Static testing","D. System testing"],
+   answer:2,explanation:"Static testing can be applied to any work product including requirements, user stories, design documents and architecture diagrams — all without executing code."},
+  {id:3,section:"3.1",subtopic:"Value of Static Testing",bloom:"K2",
+   text:"Which of the following is the MOST significant benefit of finding a defect through static testing rather than through dynamic testing?",
+   options:["A. Static testing finds more defects per hour than dynamic testing","B. Defects found earlier are cheaper to fix than those found later","C. Static testing can be fully automated, reducing human effort","D. Static testing always finds 100% of defects in a work product"],
+   answer:1,explanation:"The cost of fixing a defect increases the later it is found in the SDLC. Static testing identifies defects very early (e.g., in requirements), drastically reducing the cost of correction."},
+  {id:4,section:"3.1",subtopic:"Defect Types Found",bloom:"K2",
+   text:"Which of the following defect types is MOST likely to be found by static testing but NOT by dynamic testing?",
+   options:["A. A runtime exception thrown when dividing by zero","B. An ambiguous requirement that could be interpreted in two ways","C. A performance bottleneck under peak load","D. A security vulnerability triggered by a specific input sequence"],
+   answer:1,explanation:"Ambiguous requirements are a defect in a document, not executable code. Dynamic testing cannot detect them because you can't 'run' a requirements document. Static testing (e.g., reviews) excels at finding such inconsistencies and ambiguities."},
+  {id:5,section:"3.1",subtopic:"Static Analysis",bloom:"K1",
+   text:"What is the primary purpose of static analysis tools in software testing?",
+   options:["A. To execute test cases and record pass/fail results automatically","B. To analyse code or other artefacts for defects without execution","C. To generate performance benchmarks for the application under test","D. To manage and track defects found during dynamic testing"],
+   answer:1,explanation:"Static analysis tools examine code (or other artefacts) without executing them, checking for coding standard violations, unreachable code, security vulnerabilities, and similar issues."},
+  {id:6,section:"3.1",subtopic:"Static vs Dynamic",bloom:"K2",
+   text:"Which statement CORRECTLY differentiates static testing from dynamic testing?",
+   options:["A. Static testing requires a fully deployed environment; dynamic testing does not","B. Static testing finds defects directly; dynamic testing finds failures that may indicate defects","C. Dynamic testing can only be performed manually; static testing uses tools","D. Static testing is limited to source code; dynamic testing covers all work products"],
+   answer:1,explanation:"In static testing, reviewers find defects directly in the work product. In dynamic testing, testers observe failures (incorrect behaviour) and then investigate to identify the underlying defect."},
+  {id:7,section:"3.1",subtopic:"Applicability",bloom:"K2",
+   text:"Which of the following work products is LEAST suitable for static testing?",
+   options:["A. Requirements specification","B. Test plan document","C. Live system log files generated during a performance test","D. Database schema design"],
+   answer:2,explanation:"Live system log files are runtime artefacts produced by executing the system — they are output of dynamic testing, not work products that can be reviewed statically before execution. The other options are all reviewable documents."},
+  {id:8,section:"3.1",subtopic:"Defects in Requirements",bloom:"K3",
+   text:"During a requirements review, a tester notices: 'The system shall respond quickly to user requests.' Which type of defect does this represent?",
+   options:["A. Inconsistency — it contradicts another requirement","B. Ambiguity — 'quickly' is not measurable or defined","C. Incompleteness — a required feature is missing","D. Redundancy — the requirement is stated twice"],
+   answer:1,explanation:"The term 'quickly' is vague and unmeasurable. This is an ambiguity defect — different stakeholders could interpret it differently, leading to implementation errors."},
+  {id:9,section:"3.2",subtopic:"Review Types",bloom:"K1",
+   text:"Which review type is the MOST formal and follows a defined process with trained moderators, individual preparation, and formal defect logging?",
+   options:["A. Informal review","B. Walkthrough","C. Technical review","D. Inspection"],
+   answer:3,explanation:"An inspection is the most formal review type. It uses a trained moderator (not the author), requires documented individual preparation, formal defect logging, metrics collection, and a formal follow-up process."},
+  {id:10,section:"3.2",subtopic:"Review Types",bloom:"K2",
+   text:"A development team holds a meeting where the author walks reviewers through a requirements document, explains it, and encourages discussion. No formal metrics are collected. Which review type is this?",
+   options:["A. Inspection","B. Walkthrough","C. Technical review","D. Informal review"],
+   answer:1,explanation:"A walkthrough is led by the author, who presents the work product and explains it to reviewers. The goal is education and finding defects, but it is less formal than an inspection — no mandatory preparation or formal metrics."},
+  {id:11,section:"3.2",subtopic:"Review Roles",bloom:"K1",
+   text:"In a formal review, who is responsible for ensuring the review process is carried out correctly and for facilitating meetings?",
+   options:["A. Author","B. Reviewer","C. Moderator / Facilitator","D. Manager"],
+   answer:2,explanation:"The moderator (also called facilitator) is responsible for the effective running of the review. They plan and facilitate meetings, mediate between participants, and ensure the process is followed."},
+  {id:12,section:"3.2",subtopic:"Review Roles",bloom:"K2",
+   text:"During an inspection, who has the PRIMARY responsibility for fixing the defects identified?",
+   options:["A. Moderator","B. Scribe","C. Author","D. Manager"],
+   answer:2,explanation:"The author is the creator of the work product and holds primary responsibility for fixing the defects found during the review. The moderator facilitates the process but does not fix defects."},
+  {id:13,section:"3.2",subtopic:"Review Activities",bloom:"K2",
+   text:"In the ISTQB review process, which activity involves participants examining the work product individually BEFORE the review meeting?",
+   options:["A. Planning","B. Review initiation","C. Individual review","D. Communication and analysis"],
+   answer:2,explanation:"Individual review (also called preparation) is the phase where each reviewer independently examines the work product, noting potential defects, before the review meeting takes place."},
+  {id:14,section:"3.2",subtopic:"Review Activities",bloom:"K1",
+   text:"Which of the following is the CORRECT sequence of activities in a formal review process?",
+   options:["A. Planning → Individual Review → Review Meeting → Communication & Analysis → Fixing & Reporting","B. Individual Review → Planning → Review Meeting → Communication & Analysis → Fixing & Reporting","C. Planning → Review Meeting → Individual Review → Fixing & Reporting → Communication & Analysis","D. Planning → Communication & Analysis → Individual Review → Review Meeting → Fixing & Reporting"],
+   answer:0,explanation:"The ISTQB formal review sequence is: Planning → Review Initiation → Individual Review (preparation) → Communication & Analysis (review meeting) → Fixing & Reporting."},
+  {id:15,section:"3.2",subtopic:"Success Factors",bloom:"K2",
+   text:"Which of the following is a SUCCESS FACTOR for formal reviews according to the ISTQB syllabus?",
+   options:["A. The author defends every decision vigorously during the review meeting","B. Review meetings focus on evaluating the author's competence","C. Reviewers receive sufficient time to prepare before the review meeting","D. All defects must be fixed before the review meeting takes place"],
+   answer:2,explanation:"Adequate preparation time is a key success factor. Without preparation, reviewers are less effective at finding defects during the meeting. Reviewing the author's competence is counterproductive; reviews should focus on the work product, not the person."},
+  {id:16,section:"3.2",subtopic:"Roles – Scribe",bloom:"K1",
+   text:"What is the PRIMARY role of the scribe (recorder) during a formal review meeting?",
+   options:["A. Evaluating the quality of the work product and making accept/reject decisions","B. Documenting defects, decisions, and open issues raised during the review","C. Presenting the work product to other participants in the meeting","D. Ensuring that participants focus on process adherence throughout"],
+   answer:1,explanation:"The scribe (recorder) documents all defects found, decisions made, and open issues during the review meeting. This record becomes the basis for the author's fix list."},
+  {id:17,section:"3.2",subtopic:"Review Types Comparison",bloom:"K2",
+   text:"Which review type requires NO prior planning, no defined process, and can be as simple as a colleague checking another's code?",
+   options:["A. Inspection","B. Walkthrough","C. Technical review","D. Informal review"],
+   answer:3,explanation:"An informal review has no required process, no formal documentation, and no specific roles. It is the least formal review type — for example, a developer asking a colleague to quickly look over their code."},
+  {id:18,section:"3.2",subtopic:"Review Metrics",bloom:"K2",
+   text:"A team completes an inspection of a 20-page design document. Reviewers found 40 defects in 2 hours of preparation. What metric does this describe?",
+   options:["A. Defect density — number of defects per page","B. Review efficiency — defects found per review hour","C. Test coverage — percentage of design covered","D. Defect removal efficiency — defects removed vs. total defects"],
+   answer:1,explanation:"Defects found per review hour (40 defects / 2 hours = 20 defects/hour) is a measure of review efficiency, a common review metric used to evaluate and improve the review process."},
+  {id:19,section:"3.2",subtopic:"Review Mindset",bloom:"K2",
+   text:"During a walkthrough, a reviewer becomes personally critical of the author, saying 'This is a terrible design.' What ISTQB review principle does this violate?",
+   options:["A. Reviews should have clear, predefined entry and exit criteria","B. Reviews should focus on the work product, not the producer","C. Reviews must always be conducted in-person, not remotely","D. Only senior team members should be reviewers"],
+   answer:1,explanation:"A key review principle is that reviews must focus on the work product, never on the person who created it. Personal criticism undermines the review's purpose and creates a hostile environment."},
+  {id:20,section:"3.2",subtopic:"Entry & Exit Criteria",bloom:"K2",
+   text:"Which of the following BEST represents an entry criterion for starting a formal review?",
+   options:["A. All defects found in the previous review have been fixed and retested","B. The work product is available, stable, and review materials have been distributed with sufficient time for preparation","C. The moderator has approved the final version of the work product for release","D. At least 90% of reviewers have previously reviewed a similar document"],
+   answer:1,explanation:"Entry criteria define the conditions that must be met before a review begins. Having a stable, available work product distributed in advance for preparation is a typical entry criterion. Exit criteria (e.g., defect count thresholds) are separate."},
+  {id:21,section:"3.2",subtopic:"Technical Review",bloom:"K2",
+   text:"A group of senior architects and developers meets to evaluate a technical design for conformance to standards and to find technical defects. A moderator facilitates, and a scribe records findings. Which review type does this MOST closely match?",
+   options:["A. Informal review","B. Walkthrough","C. Technical review","D. Inspection"],
+   answer:2,explanation:"A technical review is performed by qualified personnel (peers or technical leads) with a facilitator, focusing on technical issues, standards conformance, and feasibility. It is more formal than a walkthrough but typically less formal than a full inspection."},
+  {id:22,section:"3.2",subtopic:"Review Checklist",bloom:"K3",
+   text:"A review checklist item states: 'Does each requirement have at least one measurable acceptance criterion?' What type of defect is this checklist item designed to detect?",
+   options:["A. Code duplication","B. Missing or incomplete testability in requirements","C. Incorrect algorithm logic","D. Performance threshold violations"],
+   answer:1,explanation:"This checklist item targets testability — requirements without measurable acceptance criteria cannot be objectively tested. It is a form of incompleteness defect specific to requirements quality."},
+  {id:23,section:"3.2",subtopic:"Perspectives-Based Reading",bloom:"K2",
+   text:"During a requirements review, one reviewer examines the document from the viewpoint of a tester, another from a developer's perspective, and another as an end-user. This technique is BEST described as:",
+   options:["A. Ad-hoc reviewing","B. Checklist-based reviewing","C. Perspective-based reading","D. Scenario-based reviewing"],
+   answer:2,explanation:"Perspective-based reading (PBR) assigns each reviewer a specific stakeholder viewpoint (e.g., tester, developer, user). This structured approach ensures different aspects of the work product are examined, improving defect detection coverage."},
+  {id:24,section:"3.2",subtopic:"Benefits of Reviews",bloom:"K2",
+   text:"Which of the following is NOT typically cited as a benefit of peer reviews?",
+   options:["A. Earlier defect detection, reducing the cost of fixing them","B. Improved author skills through receiving feedback","C. Guaranteed elimination of all defects before dynamic testing","D. Increased shared understanding of the work product among team members"],
+   answer:2,explanation:"Reviews significantly improve defect detection but cannot guarantee the elimination of ALL defects. That is an unrealistic claim. The other options (cost reduction, skill improvement, shared understanding) are real, recognised benefits."},
+];
+
+const sectionInfo = {
+  "3.1":{label:"3.1 Static Testing Basics",color:"#06b6d4"},
+  "3.2":{label:"3.2 Feedback & Review Process",color:"#a855f7"}
+};
+const bloomColors = {K1:"#22c55e",K2:"#f59e0b",K3:"#ef4444"};
+const bloomLabel  = {K1:"Remember",K2:"Understand/Apply",K3:"Apply"};
+
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let mode = "menu";          // menu | test | result
+let activeQs = [];
+let current = 0;
+let selected = {};          // {qid: optionIndex}
+let flagged = new Set();
+let showExpl = new Set();
+let reviewMode = false;
+let elapsed = 0;
+let timerInterval = null;
+
+// ─── TIMER ───────────────────────────────────────────────────────────────────
+function startTimer(){
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    elapsed++;
+    const el = document.getElementById("timer");
+    if(el) el.textContent = "⏱ " + formatTime(elapsed);
+  },1000);
+}
+function stopTimer(){ clearInterval(timerInterval); }
+function formatTime(s){ return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); }
+
+// ─── ACTIONS ─────────────────────────────────────────────────────────────────
+function startTest(section){
+  activeQs = section==="all"
+    ? [...questions].sort(()=>Math.random()-.5)
+    : questions.filter(q=>q.section===section).sort(()=>Math.random()-.5);
+  selected={}; flagged=new Set(); showExpl=new Set();
+  current=0; elapsed=0; reviewMode=false;
+  mode="test";
+  render();
+  startTimer();
+}
+
+function selectAnswer(qid, oi){
+  if(reviewMode) return;
+  selected[qid]=oi;
+  render();
+}
+
+function toggleFlag(qid){
+  flagged.has(qid)?flagged.delete(qid):flagged.add(qid);
+  render();
+}
+
+function toggleExpl(qid){
+  showExpl.has(qid)?showExpl.delete(qid):showExpl.add(qid);
+  // Just toggle visibility without full re-render for performance
+  const box = document.getElementById("expl-"+qid);
+  const btn = document.getElementById("explbtn-"+qid);
+  if(box){
+    box.classList.toggle("visible");
+    btn.textContent = box.classList.contains("visible") ? "▲ Hide Explanation" : "▼ Show Explanation";
+  }
+}
+
+function goTo(i){ current=i; render(); }
+
+function finish(){
+  stopTimer();
+  mode="result";
+  render();
+}
+
+function backToMenu(){
+  stopTimer();
+  mode="menu";
+  render();
+}
+
+function startReview(){
+  mode="test";
+  reviewMode=true;
+  current=0;
+  render();
+}
+
+// ─── RENDER ──────────────────────────────────────────────────────────────────
+function render(){
+  const app = document.getElementById("app");
+  if(mode==="menu")      app.innerHTML = renderMenu();
+  else if(mode==="test") app.innerHTML = renderTest();
+  else if(mode==="result") app.innerHTML = renderResult();
+}
+
+// ── MENU ──
+function renderMenu(){
+  const unitCards = Object.entries(sectionInfo).map(([k,v])=>`
+    <div class="unit-card" style="border-color:${v.color}">
+      <div class="unit-dot" style="background:${v.color}"></div>
+      <span class="unit-label">${v.label}</span>
+      <span class="unit-count">${questions.filter(q=>q.section===k).length} Qs</span>
+    </div>`).join("");
+
+  const bloomLegend = Object.entries(bloomColors).map(([k,c])=>`
+    <span class="bloom-tag" style="background:${c}22;color:${c};border:1px solid ${c}55">${k} – ${bloomLabel[k]}</span>`).join("");
+
+  return `
+  <div class="hero-card">
+    <div class="badge">ISTQB® CTFL v4.0</div>
+    <h1 class="hero-title">Unit 3: Static Testing</h1>
+    <p class="hero-sub">24 exam-style questions · Two sub-topics · Bloom's K1–K3</p>
+    <div class="unit-grid">${unitCards}</div>
+    <div class="btn-row">
+      <button class="btn" style="background:#06b6d4" onclick="startTest('3.1')">3.1 Static Basics Only (8 Qs)</button>
+      <button class="btn" style="background:#a855f7" onclick="startTest('3.2')">3.2 Review Process Only (16 Qs)</button>
+      <button class="btn-full" onclick="startTest('all')">Full Unit 3 Mock — All 24 Questions</button>
+    </div>
+    <div class="legend">${bloomLegend}</div>
+  </div>`;
+}
+
+// ── TEST ──
+function renderTest(){
+  const q = activeQs[current];
+  const answered = Object.keys(selected).length;
+  const unanswered = activeQs.length - answered;
+  const pct = Math.round(((current+1)/activeQs.length)*100);
+  const secColor = sectionInfo[q.section].color;
+  const bColor = bloomColors[q.bloom];
+
+  // dot nav
+  const dots = activeQs.map((aq,i)=>{
+    const isAns = selected[aq.id]!==undefined;
+    const isCur = i===current;
+    const isFlag = flagged.has(aq.id);
+    const isOk  = reviewMode && isAns && selected[aq.id]===aq.answer;
+    const isBad = reviewMode && isAns && selected[aq.id]!==aq.answer;
+    const bg = isBad?"#ef444433":isOk?"#22c55e33":isCur?"#fff":isAns?"#3b82f633":"#ffffff11";
+    const border = isCur?"2px solid #fff":isFlag?"2px solid #f59e0b":"2px solid transparent";
+    const color = isCur?"#0f172a":"#fff";
+    return `<button class="dot" onclick="goTo(${i})" style="background:${bg};border:${border};color:${color}">${i+1}</button>`;
+  }).join("");
+
+  // options
+  const opts = q.options.map((opt,oi)=>{
+    const isSel = selected[q.id]===oi;
+    const isOk  = reviewMode && oi===q.answer;
+    const isBad = reviewMode && isSel && oi!==q.answer;
+    let cls = "option";
+    if(isOk) cls+=" opt-correct";
+    else if(isBad) cls+=" opt-wrong";
+    else if(isSel) cls+=" opt-selected";
+    const mark = isOk?`<span class="opt-mark">✓</span>`:isBad?`<span class="opt-mark">✗</span>`:"";
+    return `<button class="${cls}" onclick="selectAnswer(${q.id},${oi})">
+      <span class="opt-letter">${["A","B","C","D"][oi]}</span>
+      <span>${opt.slice(3)}</span>${mark}
+    </button>`;
+  }).join("");
+
+  // explanation section (show after answering or in review)
+  const hasAnswered = selected[q.id]!==undefined;
+  const explSection = (reviewMode||hasAnswered)?`
+    <button class="expl-btn" id="explbtn-${q.id}" onclick="toggleExpl(${q.id})">▼ Show Explanation</button>
+    <div class="expl-box${showExpl.has(q.id)?' visible':''}" id="expl-${q.id}">
+      <strong style="color:#94a3b8">Explanation: </strong>${q.explanation}
+    </div>`:"";
+
+  const flagLabel = flagged.has(q.id)?"🚩 Flagged":"⚑ Flag";
+  const flagColor = flagged.has(q.id)?"#f59e0b":"#64748b";
+
+  const nextBtn = current < activeQs.length-1
+    ? `<button class="nav-btn" style="background:#3b82f6" onclick="goTo(${current+1})">Next →</button>`
+    : `<button class="nav-btn" style="background:#22c55e" onclick="finish()">Submit ✓</button>`;
+
+  return `
+  <div class="top-bar">
+    <div class="top-left">
+      <span class="unit-tag">Unit 3 · Static Testing</span>
+      <span class="bloom-tag" style="background:${bColor}22;color:${bColor};border:1px solid ${bColor}55">${q.bloom}</span>
+      <span class="section-tag" style="background:${secColor}22;color:${secColor}">§${q.section}</span>
+    </div>
+    <div class="top-right">
+      <span class="timer" id="timer">⏱ ${formatTime(elapsed)}</span>
+      <span class="progress-label">${current+1} / ${activeQs.length}</span>
+    </div>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" style="width:${pct}%"></div></div>
+  <div class="dot-row">${dots}</div>
+  <div class="q-card">
+    <div class="q-meta">
+      <span class="q-topic">${q.subtopic}</span>
+      <button class="flag-btn" style="color:${flagColor}" onclick="toggleFlag(${q.id})">${flagLabel}</button>
+    </div>
+    <p class="q-text">${q.text}</p>
+    <div class="option-list">${opts}</div>
+    ${explSection}
+  </div>
+  <div class="nav-row">
+    <button class="nav-btn" onclick="goTo(${current-1})" ${current===0?"disabled":""}>← Prev</button>
+    <div class="nav-center">
+      Answered: <strong style="color:#e2e8f0">${answered}</strong> &nbsp;|&nbsp;
+      Unanswered: <strong style="color:${unanswered>0?'#f59e0b':'#22c55e'}">${unanswered}</strong>
+    </div>
+    ${nextBtn}
+  </div>`;
+}
+
+// ── RESULT ──
+function renderResult(){
+  const score = activeQs.filter(q=>selected[q.id]===q.answer).length;
+  const total = activeQs.length;
+  const pct = Math.round((score/total)*100);
+  const passed = pct>=65;
+
+  const bySection = Object.entries(sectionInfo).map(([sec,info])=>{
+    const qs = activeQs.filter(q=>q.section===sec);
+    if(!qs.length) return "";
+    const correct = qs.filter(q=>selected[q.id]===q.answer).length;
+    const fillPct = Math.round((correct/qs.length)*100);
+    return `
+    <div class="sec-row">
+      <span class="sec-name" style="color:${info.color}">${info.label}</span>
+      <div class="sec-bar"><div class="sec-fill" style="width:${fillPct}%;background:${info.color}"></div></div>
+      <span class="sec-score">${correct}/${qs.length}</span>
+    </div>`;
+  }).join("");
+
+  return `
+  <div class="result-card" style="margin:0 auto">
+    <div class="result-emoji">${passed?"🎉":"📚"}</div>
+    <div class="result-title">${passed?"Well Done! You Passed":"Keep Practising"}</div>
+    <div class="score-big">
+      <span style="color:${passed?'#22c55e':'#ef4444'}">${score}</span><span style="color:#475569">/${total}</span>
+    </div>
+    <div class="pct-line">${pct}% &nbsp;·&nbsp; ⏱ ${formatTime(elapsed)}</div>
+    <div class="pass-tag" style="background:${passed?'#22c55e22':'#ef444422'};color:${passed?'#22c55e':'#ef4444'};border:1px solid ${passed?'#22c55e':'#ef4444'}">
+      ${passed?"PASS":"FAIL"} — Threshold: 65%
+    </div>
+    <div class="sec-breakdown">${bySection}</div>
+    <div class="result-btns">
+      <button class="btn" style="background:#3b82f6" onclick="startReview()">Review All Answers</button>
+      <button class="btn-full" onclick="backToMenu()">← Back to Menu</button>
+    </div>
+  </div>`;
+}
+
+// ─── BOOT ────────────────────────────────────────────────────────────────────
+render();
+</script>
+</body>
+</html>
