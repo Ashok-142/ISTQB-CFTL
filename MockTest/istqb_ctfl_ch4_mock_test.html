@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ISTQB CTFL v4.0 – Chapter 4 Mock Test</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161a24;
+    --surface2: #1e2535;
+    --border: #2a3347;
+    --accent: #4f8ef7;
+    --accent2: #f7c94f;
+    --accent3: #5ef7a0;
+    --danger: #f7604f;
+    --text: #e8ecf5;
+    --text-muted: #8892aa;
+    --tag-41: #4f8ef7;
+    --tag-42: #f7c94f;
+    --tag-43: #5ef7a0;
+    --radius: 12px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* GRID BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── SCREENS ── */
+  .screen { display: none; position: relative; z-index: 1; min-height: 100vh; }
+  .screen.active { display: flex; flex-direction: column; }
+
+  /* ── HOME ── */
+  #home {
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    text-align: center;
+  }
+  .badge {
+    display: inline-block;
+    background: rgba(79,142,247,0.12);
+    border: 1px solid rgba(79,142,247,0.3);
+    color: var(--accent);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+  }
+  .home-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(32px, 6vw, 64px);
+    font-weight: 800;
+    line-height: 1.05;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #e8ecf5 0%, #4f8ef7 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .home-sub {
+    color: var(--text-muted);
+    font-size: 16px;
+    max-width: 520px;
+    line-height: 1.6;
+    margin: 0 auto 40px;
+  }
+
+  /* TOPIC CARDS */
+  .topic-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto 40px;
+  }
+  .topic-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    text-align: left;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+  .topic-card:hover { border-color: var(--accent); transform: translateY(-2px); background: var(--surface2); }
+  .topic-num {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .topic-card:nth-child(1) .topic-num { color: var(--tag-41); }
+  .topic-card:nth-child(2) .topic-num { color: var(--tag-42); }
+  .topic-card:nth-child(3) .topic-num { color: var(--tag-43); }
+  .topic-card h3 { font-family: 'Syne', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .topic-card p { font-size: 13px; color: var(--text-muted); line-height: 1.5; }
+  .q-count {
+    margin-top: 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 14px 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* MODE TOGGLE */
+  .mode-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+  }
+  .mode-btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+  .mode-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── QUIZ SCREEN ── */
+  #quiz {
+    padding: 0;
+    flex-direction: column;
+  }
+
+  /* HEADER BAR */
+  .quiz-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: rgba(13,15,20,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .quiz-header-left { display: flex; align-items: center; gap: 16px; }
+  .logo-sm { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 15px; color: var(--accent); }
+
+  .progress-wrap { display: flex; flex-direction: column; gap: 4px; min-width: 160px; }
+  .progress-label { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: var(--accent); border-radius: 2px; transition: width 0.4s ease; }
+
+  .timer-pill {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 8px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    min-width: 72px;
+    text-align: center;
+    transition: color 0.3s;
+  }
+  .timer-pill.warn { color: var(--accent2); border-color: var(--accent2); }
+  .timer-pill.danger { color: var(--danger); border-color: var(--danger); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.6} }
+
+  /* QUESTION BODY */
+  .quiz-body {
+    flex: 1;
+    padding: 32px 24px;
+    max-width: 760px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .q-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .q-tag {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 4px;
+    font-weight: 500;
+  }
+  .q-tag.t41 { background: rgba(79,142,247,0.12); color: var(--tag-41); border: 1px solid rgba(79,142,247,0.2); }
+  .q-tag.t42 { background: rgba(247,201,79,0.12); color: var(--tag-42); border: 1px solid rgba(247,201,79,0.2); }
+  .q-tag.t43 { background: rgba(94,247,160,0.12); color: var(--tag-43); border: 1px solid rgba(94,247,160,0.2); }
+  .q-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+
+  .q-text {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(16px, 2.5vw, 20px);
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 28px;
+    color: var(--text);
+  }
+
+  /* OPTIONS */
+  .options { display: flex; flex-direction: column; gap: 12px; margin-bottom: 28px; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 16px 20px;
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    transition: all 0.18s ease;
+    text-align: left;
+  }
+  .option:hover:not(.disabled) { border-color: var(--accent); background: var(--surface2); }
+  .option.selected { border-color: var(--accent); background: rgba(79,142,247,0.08); }
+  .option.correct { border-color: var(--accent3) !important; background: rgba(94,247,160,0.08) !important; }
+  .option.wrong { border-color: var(--danger) !important; background: rgba(247,96,79,0.08) !important; }
+  .option.disabled { cursor: default; }
+  .opt-letter {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.18s;
+  }
+  .option.selected .opt-letter { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .option.correct .opt-letter { background: var(--accent3); border-color: var(--accent3); color: #0d0f14; }
+  .option.wrong .opt-letter { background: var(--danger); border-color: var(--danger); color: #fff; }
+  .opt-text { font-size: 14px; line-height: 1.55; padding-top: 4px; color: var(--text); }
+
+  /* EXPLANATION */
+  .explanation {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 24px;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
+  .explanation-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+  .explanation p { font-size: 14px; line-height: 1.65; color: var(--text-muted); }
+  .explanation strong { color: var(--text); }
+  .syllabus-ref {
+    margin-top: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--text-muted);
+    opacity: 0.7;
+  }
+
+  /* QUIZ NAV */
+  .quiz-nav {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  /* ── RESULTS SCREEN ── */
+  #results {
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+  }
+  .results-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    max-width: 700px;
+    width: 100%;
+    text-align: center;
+  }
+  .results-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .results-sub { color: var(--text-muted); margin-bottom: 40px; font-size: 15px; }
+
+  .score-ring {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 36px;
+    position: relative;
+  }
+  .score-ring svg { transform: rotate(-90deg); }
+  .score-ring circle { fill: none; stroke-width: 12; transition: stroke-dashoffset 1s ease; }
+  .score-ring .bg { stroke: var(--border); }
+  .score-ring .fg { stroke: var(--accent3); stroke-linecap: round; }
+  .score-label {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .score-pct {
+    font-family: 'Syne', sans-serif;
+    font-size: 36px;
+    font-weight: 800;
+  }
+  .score-pct-label { font-size: 11px; color: var(--text-muted); font-family: 'DM Mono', monospace; }
+
+  .breakdown-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+  .breakdown-item {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px;
+    text-align: center;
+  }
+  .breakdown-item .num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 4px;
+  }
+  .breakdown-item .lbl { font-size: 12px; color: var(--text-muted); }
+  .breakdown-item.correct .num { color: var(--accent3); }
+  .breakdown-item.wrong .num { color: var(--danger); }
+  .breakdown-item.skipped .num { color: var(--accent2); }
+
+  /* TOPIC BREAKDOWN */
+  .topic-breakdown { margin-bottom: 36px; text-align: left; }
+  .topic-breakdown h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .topic-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .topic-row-label { font-size: 13px; min-width: 100px; }
+  .topic-bar-wrap { flex: 1; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+  .topic-bar-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease; }
+  .topic-row-pct { font-family: 'DM Mono', monospace; font-size: 12px; min-width: 38px; text-align: right; }
+
+  .pass-banner {
+    padding: 16px 24px;
+    border-radius: var(--radius);
+    font-family: 'Syne', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 32px;
+  }
+  .pass-banner.pass { background: rgba(94,247,160,0.1); border: 1px solid rgba(94,247,160,0.3); color: var(--accent3); }
+  .pass-banner.fail { background: rgba(247,96,79,0.1); border: 1px solid rgba(247,96,79,0.3); color: var(--danger); }
+
+  .results-btns { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+  /* QUESTION MAP */
+  .q-map { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 32px; justify-content: center; }
+  .q-dot {
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: transform 0.15s;
+  }
+  .q-dot:hover { transform: scale(1.1); }
+  .q-dot.unanswered { background: var(--surface2); border-color: var(--border); color: var(--text-muted); }
+  .q-dot.correct { background: rgba(94,247,160,0.15); border-color: rgba(94,247,160,0.4); color: var(--accent3); }
+  .q-dot.wrong { background: rgba(247,96,79,0.15); border-color: rgba(247,96,79,0.4); color: var(--danger); }
+
+  /* RESPONSIVE */
+  @media (max-width: 600px) {
+    .breakdown-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+    .results-card { padding: 32px 20px; }
+    .quiz-header { padding: 12px 16px; }
+    .quiz-body { padding: 24px 16px; }
+  }
+
+  /* SUBTOPIC LABEL */
+  .subtopic-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.5px;
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════════════════ HOME ══════════════════ -->
+<div id="home" class="screen active">
+  <div class="badge">ISTQB CTFL v4.0 — Chapter 4</div>
+  <h1 class="home-title">Test Analysis<br>& Design</h1>
+  <p class="home-sub">
+    Topics 4.1 · 4.2 · 4.3 — Test Techniques Overview, Black-Box Techniques, and White-Box Techniques. Questions modeled on official ISTQB sample exams.
+  </p>
+
+  <div class="topic-grid">
+    <div class="topic-card">
+      <div class="topic-num">§ 4.1</div>
+      <h3>Test Techniques Overview</h3>
+      <p>Categories of techniques, their selection criteria, and when to apply each approach.</p>
+      <div class="q-count">7 questions</div>
+    </div>
+    <div class="topic-card">
+      <div class="topic-num">§ 4.2</div>
+      <h3>Black-Box Test Techniques</h3>
+      <p>EP, BVA, Decision Tables, State Transition Testing & their K-levels.</p>
+      <div class="q-count">14 questions</div>
+    </div>
+    <div class="topic-card">
+      <div class="topic-num">§ 4.3</div>
+      <h3>White-Box Test Techniques</h3>
+      <p>Statement testing, branch testing, coverage criteria and their applications.</p>
+      <div class="q-count">8 questions</div>
+    </div>
+  </div>
+
+  <div class="mode-row">
+    <button class="mode-btn active" onclick="selectMode('all')">All Topics (29 Qs)</button>
+    <button class="mode-btn" onclick="selectMode('4.1')">§ 4.1 Only (7 Qs)</button>
+    <button class="mode-btn" onclick="selectMode('4.2')">§ 4.2 Only (14 Qs)</button>
+    <button class="mode-btn" onclick="selectMode('4.3')">§ 4.3 Only (8 Qs)</button>
+  </div>
+
+  <button class="btn-primary" onclick="startQuiz()">Start Mock Test →</button>
+</div>
+
+<!-- ══════════════════ QUIZ ══════════════════ -->
+<div id="quiz" class="screen">
+  <div class="quiz-header">
+    <div class="quiz-header-left">
+      <div class="logo-sm">CTFL v4.0</div>
+      <div class="progress-wrap">
+        <div class="progress-label" id="progress-label">Q 1 / 29</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px">
+      <div class="q-map" id="q-map-mini" style="margin:0;max-width:300px;overflow:hidden"></div>
+      <div class="timer-pill" id="timer">60:00</div>
+    </div>
+  </div>
+
+  <div class="quiz-body">
+    <div class="q-meta">
+      <span class="q-tag" id="q-tag">§ 4.1</span>
+      <span class="subtopic-label" id="q-subtopic"></span>
+      <span class="q-number" id="q-number">Q1</span>
+    </div>
+    <div class="q-text" id="q-text"></div>
+    <div class="options" id="options"></div>
+    <div class="explanation" id="explanation" style="display:none">
+      <div class="explanation-title">✦ Explanation</div>
+      <p id="explanation-text"></p>
+      <div class="syllabus-ref" id="syllabus-ref"></div>
+    </div>
+    <div class="quiz-nav">
+      <button class="btn-ghost" onclick="prevQ()">← Previous</button>
+      <button class="btn-primary" id="next-btn" onclick="nextOrSubmit()">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════ RESULTS ══════════════════ -->
+<div id="results" class="screen">
+  <div class="results-card">
+    <div class="results-title">Results</div>
+    <div class="results-sub" id="results-sub"></div>
+    <div class="score-ring">
+      <svg width="160" height="160" viewBox="0 0 160 160">
+        <circle class="bg" cx="80" cy="80" r="68"/>
+        <circle class="fg" id="score-arc" cx="80" cy="80" r="68" stroke-dasharray="427" stroke-dashoffset="427"/>
+      </svg>
+      <div class="score-label">
+        <div class="score-pct" id="score-pct">0%</div>
+        <div class="score-pct-label">SCORE</div>
+      </div>
+    </div>
+    <div class="breakdown-grid">
+      <div class="breakdown-item correct"><div class="num" id="r-correct">0</div><div class="lbl">Correct</div></div>
+      <div class="breakdown-item wrong"><div class="num" id="r-wrong">0</div><div class="lbl">Incorrect</div></div>
+      <div class="breakdown-item skipped"><div class="num" id="r-skip">0</div><div class="lbl">Skipped</div></div>
+    </div>
+    <div class="pass-banner" id="pass-banner">–</div>
+    <div class="topic-breakdown">
+      <h4>Performance by Topic</h4>
+      <div id="topic-rows"></div>
+    </div>
+    <div class="q-map" id="q-map-results"></div>
+    <div class="results-btns">
+      <button class="btn-ghost" onclick="reviewQuiz()">Review Answers</button>
+      <button class="btn-primary" onclick="goHome()">Try Again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════
+//  QUESTION BANK  — 29 questions across 4.1/4.2/4.3
+// ════════════════════════════════════════════════
+const BANK = [
+// ─── 4.1 TEST TECHNIQUES OVERVIEW ───────────────
+{
+  id: 1, topic: "4.1", subtopic: "Overview of Techniques",
+  q: "Which of the following BEST describes a 'test technique' as defined in ISTQB CTFL v4.0?",
+  opts: [
+    "A method for managing defects in a test management tool",
+    "A procedure used to derive and select test cases",
+    "A process for measuring test coverage using tools",
+    "A strategy for allocating test resources across test levels"
+  ],
+  ans: 1,
+  exp: "ISTQB defines a test technique as a procedure used to derive and select test conditions, test cases, and test data. It focuses on HOW tests are designed, not on management or tooling.",
+  ref: "CTFL v4.0 Syllabus §4.1"
+},
+{
+  id: 2, topic: "4.1", subtopic: "Categories of Techniques",
+  q: "Which THREE categories of test techniques are defined in the ISTQB CTFL v4.0 syllabus?",
+  opts: [
+    "Black-box, White-box, and Experience-based",
+    "Static, Dynamic, and Exploratory",
+    "Functional, Non-functional, and Structural",
+    "Manual, Automated, and Hybrid"
+  ],
+  ans: 0,
+  exp: "CTFL v4.0 §4 categorises test techniques into three groups: Black-box techniques (based on specification), White-box techniques (based on structure/code), and Experience-based techniques (based on tester knowledge/skill).",
+  ref: "CTFL v4.0 Syllabus §4.1"
+},
+{
+  id: 3, topic: "4.1", subtopic: "Black-Box vs White-Box",
+  q: "What is the PRIMARY distinction between black-box and white-box test techniques?",
+  opts: [
+    "Black-box tests are automated; white-box tests are manual",
+    "Black-box tests are based on the component's external specification; white-box tests are based on internal structure",
+    "Black-box techniques are used only at system level; white-box only at unit level",
+    "Black-box testing requires source code access; white-box does not"
+  ],
+  ans: 1,
+  exp: "Black-box techniques derive tests from the system's external specification (what it should do) WITHOUT looking at code. White-box techniques derive tests from the internal structure (how it is implemented). Neither definition restricts which test level they apply to.",
+  ref: "CTFL v4.0 Syllabus §4.1"
+},
+{
+  id: 4, topic: "4.1", subtopic: "Experience-Based",
+  q: "Which of the following is an experience-based test technique?",
+  opts: [
+    "Equivalence Partitioning",
+    "Statement Testing",
+    "Exploratory Testing",
+    "Decision Table Testing"
+  ],
+  ans: 2,
+  exp: "Exploratory Testing is an experience-based technique where the tester's knowledge, skill, and intuition guide test design and execution simultaneously. EP and Decision Tables are black-box; Statement Testing is white-box.",
+  ref: "CTFL v4.0 Syllabus §4.4"
+},
+{
+  id: 5, topic: "4.1", subtopic: "Selecting Techniques",
+  q: "A team is testing a financial application where detailed written specifications exist and access to source code is NOT available. Which technique category is MOST appropriate?",
+  opts: [
+    "White-box test techniques",
+    "Experience-based test techniques",
+    "Black-box test techniques",
+    "Coverage-based test techniques"
+  ],
+  ans: 2,
+  exp: "When detailed written specifications exist and source code is unavailable, black-box techniques are most appropriate because they are derived from the specification (what the system should do) without needing to examine the code.",
+  ref: "CTFL v4.0 Syllabus §4.1"
+},
+{
+  id: 6, topic: "4.1", subtopic: "Combining Techniques",
+  q: "Which statement about combining test techniques is MOST accurate according to CTFL v4.0?",
+  opts: [
+    "Only one test technique should be applied per test level to avoid duplication",
+    "Black-box and white-box techniques are mutually exclusive on the same component",
+    "Combining multiple techniques on the same component increases confidence in test coverage",
+    "Experience-based techniques replace the need for systematic black-box techniques"
+  ],
+  ans: 2,
+  exp: "The syllabus states that techniques are not mutually exclusive and can be combined. Using multiple techniques (e.g., EP for black-box plus statement testing for white-box) on the same component increases overall coverage and confidence.",
+  ref: "CTFL v4.0 Syllabus §4.1"
+},
+{
+  id: 7, topic: "4.1", subtopic: "Technique vs Approach",
+  q: "How does a 'test approach' differ from a 'test technique' in CTFL v4.0 terminology?",
+  opts: [
+    "A test approach defines HOW individual test cases are derived; a technique defines WHEN tests are run",
+    "A test approach is a high-level strategic selection of techniques for a project; a test technique is a specific procedure for deriving test cases",
+    "A test approach is used only in Agile projects; a test technique applies to Waterfall only",
+    "There is no difference — they are synonymous in the syllabus"
+  ],
+  ans: 1,
+  exp: "In CTFL v4.0, a 'test approach' is the implementation of a test strategy for a specific project — it defines WHICH techniques, test levels, and types to use. A 'test technique' is the specific procedure used to design and select test cases.",
+  ref: "CTFL v4.0 Syllabus §4.1, §5.1"
+},
+
+// ─── 4.2 BLACK-BOX TECHNIQUES ───────────────────
+{
+  id: 8, topic: "4.2", subtopic: "Equivalence Partitioning",
+  q: "An application accepts a numeric field where valid inputs are integers from 1 to 100. Using Equivalence Partitioning, which set CORRECTLY identifies the partitions?",
+  opts: [
+    "Valid: {1–100}; Invalid: {< 1}; Invalid: {> 100}",
+    "Valid: {1}; Valid: {50}; Valid: {100}; Invalid: {0}; Invalid: {101}",
+    "Valid: {1–50}; Valid: {51–100}; Invalid: {< 1}; Invalid: {> 100}",
+    "Valid: {1–100}; Invalid: {any other value}"
+  ],
+  ans: 0,
+  exp: "EP identifies partitions where all members are expected to behave equivalently. For 1–100: one valid partition (1 to 100), one invalid partition (less than 1, e.g. 0), one invalid partition (greater than 100, e.g. 101). Option A correctly names 3 distinct partitions.",
+  ref: "CTFL v4.0 Syllabus §4.2.1"
+},
+{
+  id: 9, topic: "4.2", subtopic: "Equivalence Partitioning",
+  q: "A test engineer has identified 4 equivalence partitions (1 valid, 3 invalid). How many test cases are needed to achieve MINIMUM test coverage (one value per partition)?",
+  opts: ["1", "2", "3", "4"],
+  ans: 3,
+  exp: "The EP principle requires at least one test case per partition to achieve minimum coverage. With 4 partitions (1 valid + 3 invalid), at minimum 4 test cases are needed — one representative value from each partition.",
+  ref: "CTFL v4.0 Syllabus §4.2.1"
+},
+{
+  id: 10, topic: "4.2", subtopic: "Boundary Value Analysis",
+  q: "For an input field that accepts values from 10 to 20 (inclusive), which values should be tested using 2-value BVA?",
+  opts: [
+    "9, 10, 20, 21",
+    "10, 11, 19, 20",
+    "9, 10, 15, 20, 21",
+    "10, 20"
+  ],
+  ans: 0,
+  exp: "2-value BVA (as per CTFL v4.0) tests each boundary and the adjacent value just outside. For range [10,20]: lower boundary = 10, value just below = 9; upper boundary = 20, value just above = 21. Test values: 9, 10, 20, 21.",
+  ref: "CTFL v4.0 Syllabus §4.2.2"
+},
+{
+  id: 11, topic: "4.2", subtopic: "Boundary Value Analysis",
+  q: "3-value BVA tests the boundary value, the value just below it, AND the value just above it. For a lower boundary of 18, what are the THREE test values?",
+  opts: [
+    "17, 18, 19",
+    "16, 17, 18",
+    "18, 19, 20",
+    "17, 18, 20"
+  ],
+  ans: 0,
+  exp: "3-value BVA tests: (boundary − 1), boundary, (boundary + 1). For a lower boundary of 18: 17 (just below), 18 (boundary itself), 19 (just above). This gives tighter coverage than 2-value BVA.",
+  ref: "CTFL v4.0 Syllabus §4.2.2"
+},
+{
+  id: 12, topic: "4.2", subtopic: "Boundary Value Analysis",
+  q: "Which statement BEST explains why BVA is used in addition to EP?",
+  opts: [
+    "BVA replaces EP and requires fewer test cases",
+    "Defects are more likely to occur at boundaries between partitions than in the middle",
+    "BVA covers all paths through the code, unlike EP",
+    "BVA applies to invalid partitions only; EP applies to valid partitions only"
+  ],
+  ans: 1,
+  exp: "Experience and defect statistics show that defects tend to cluster at boundary values — i.e., at the edges between valid and invalid partitions. BVA supplements EP by specifically targeting these high-risk boundary values.",
+  ref: "CTFL v4.0 Syllabus §4.2.2"
+},
+{
+  id: 13, topic: "4.2", subtopic: "Decision Table Testing",
+  q: "A decision table has 3 Boolean conditions. What is the MAXIMUM number of unique columns (rule combinations) the full decision table can contain?",
+  opts: ["3", "6", "8", "9"],
+  ans: 2,
+  exp: "For n Boolean (true/false) conditions, the maximum number of unique combinations is 2ⁿ. For 3 conditions: 2³ = 8 columns. Decision table testing helps ensure every unique combination of input conditions is considered.",
+  ref: "CTFL v4.0 Syllabus §4.2.3"
+},
+{
+  id: 14, topic: "4.2", subtopic: "Decision Table Testing",
+  q: "When is Decision Table Testing MOST valuable?",
+  opts: [
+    "When testing sequential logic that follows a straight path",
+    "When testing systems with complex combinations of conditions affecting the output",
+    "When the system has a large number of state changes",
+    "When testing performance under high load conditions"
+  ],
+  ans: 1,
+  exp: "Decision Table Testing is most valuable when multiple conditions (business rules) combine to produce different outputs/actions. It systematically captures every combination, preventing testers from missing interactions between conditions.",
+  ref: "CTFL v4.0 Syllabus §4.2.3"
+},
+{
+  id: 15, topic: "4.2", subtopic: "Decision Table Testing",
+  q: "In a decision table, what does 'N/A' (or 'don't care') in a condition slot mean?",
+  opts: [
+    "The condition must always be False for that rule",
+    "The condition value does not affect the outcome for that rule",
+    "The condition has not yet been defined by the analyst",
+    "The rule is invalid and should be removed"
+  ],
+  ans: 1,
+  exp: "'Don't care' (N/A or '-') means the value of that condition (True or False) does not change the action/outcome for that specific rule. This allows table compression by merging equivalent columns.",
+  ref: "CTFL v4.0 Syllabus §4.2.3"
+},
+{
+  id: 16, topic: "4.2", subtopic: "State Transition Testing",
+  q: "In a State Transition Diagram, which of the following CORRECTLY describes a 'transition'?",
+  opts: [
+    "A stable condition in which the system waits for input",
+    "A movement from one state to another, triggered by an event and possibly producing an output/action",
+    "The initial configuration of the system before any events occur",
+    "A test case that verifies the system reaches a given state"
+  ],
+  ans: 1,
+  exp: "A transition represents the movement from one state to another, triggered by a specific event (guard condition may apply) and optionally producing an action/output. States are the 'boxes'; transitions are the 'arrows'.",
+  ref: "CTFL v4.0 Syllabus §4.2.4"
+},
+{
+  id: 17, topic: "4.2", subtopic: "State Transition Testing",
+  q: "A system has 4 states and 6 valid transitions. To achieve 0-switch coverage (all states covered), what is the MINIMUM number of tests required?",
+  opts: [
+    "1 test that visits all 4 states in one sequence",
+    "4 tests — one per state",
+    "6 tests — one per transition",
+    "10 tests — states plus transitions"
+  ],
+  ans: 0,
+  exp: "0-switch (state) coverage requires every state to be visited at least once. This can potentially be achieved with a single test sequence that visits all 4 states, so the minimum is 1 (if all states are reachable in one path). The key point: objective is coverage of states, not individual transitions.",
+  ref: "CTFL v4.0 Syllabus §4.2.4"
+},
+{
+  id: 18, topic: "4.2", subtopic: "State Transition Testing",
+  q: "Which coverage criterion is MORE thorough than 0-switch coverage in state transition testing?",
+  opts: [
+    "Statement coverage",
+    "1-switch (transition) coverage",
+    "Equivalence partition coverage",
+    "Decision coverage"
+  ],
+  ans: 1,
+  exp: "1-switch coverage (also called transition coverage) requires every valid transition to be exercised at least once — this is stronger than 0-switch (state) coverage which only requires each state to be visited. Higher n-switch values provide even greater coverage.",
+  ref: "CTFL v4.0 Syllabus §4.2.4"
+},
+{
+  id: 19, topic: "4.2", subtopic: "EP & BVA Combined",
+  q: "A registration form requires age between 18 and 65 (inclusive). Using EP + 2-value BVA, which set of test values provides the BEST coverage?",
+  opts: [
+    "17, 18, 65, 66 (boundaries only)",
+    "17, 18, 30, 65, 66 (boundaries + middle)",
+    "18, 65 (valid boundaries only)",
+    "0, 17, 30, 66, 100 (invalid + valid middle)"
+  ],
+  ans: 1,
+  exp: "EP gives: invalid partition (< 18), valid partition (18–65), invalid partition (> 65). BVA adds boundary testing: 17 (just below lower), 18 (lower boundary), 65 (upper boundary), 66 (just above upper). Adding a mid-partition value (30) covers the valid partition body. Option B gives the most complete coverage.",
+  ref: "CTFL v4.0 Syllabus §4.2.1, §4.2.2"
+},
+{
+  id: 20, topic: "4.2", subtopic: "Equivalence Partitioning",
+  q: "Which statement about invalid equivalence partitions is CORRECT per CTFL v4.0?",
+  opts: [
+    "Invalid partitions should be ignored because they only verify error handling",
+    "Each invalid partition should be tested with its own test case to avoid masking faults",
+    "A single test case can cover all invalid partitions simultaneously",
+    "Invalid partitions are only relevant during integration testing"
+  ],
+  ans: 1,
+  exp: "CTFL v4.0 recommends testing each invalid partition with a SEPARATE test case. If you combine multiple invalid inputs in one test, the system may reject the first invalid input before even processing the second, masking defects in the other partitions.",
+  ref: "CTFL v4.0 Syllabus §4.2.1"
+},
+{
+  id: 21, topic: "4.2", subtopic: "Black-Box General",
+  q: "Which of the following is a characteristic SHARED by all black-box test techniques?",
+  opts: [
+    "They all require access to the source code",
+    "They all measure code coverage",
+    "Test cases are derived from the specification or model, independent of implementation",
+    "They can only be applied during system testing"
+  ],
+  ans: 2,
+  exp: "The defining characteristic of ALL black-box techniques is that test cases are designed based on the system's specification/model without knowledge of the internal implementation. They treat the system as a 'black box'.",
+  ref: "CTFL v4.0 Syllabus §4.2"
+},
+
+// ─── 4.3 WHITE-BOX TECHNIQUES ───────────────────
+{
+  id: 22, topic: "4.3", subtopic: "White-Box Overview",
+  q: "Which of the following BEST describes the basis for white-box test techniques?",
+  opts: [
+    "Requirements and specification documents",
+    "Tester experience and intuition",
+    "Internal structure of the software, such as code or architecture",
+    "Risk assessments performed by the test manager"
+  ],
+  ans: 2,
+  exp: "White-box test techniques are based on the internal structure of the component or system under test — typically the source code, control flow, or data flow. Test coverage is measured against these internal elements.",
+  ref: "CTFL v4.0 Syllabus §4.3"
+},
+{
+  id: 23, topic: "4.3", subtopic: "Statement Testing",
+  q: "A code module has 10 executable statements. A test suite exercises 7 of them. What is the statement coverage achieved?",
+  opts: ["50%", "60%", "70%", "80%"],
+  ans: 2,
+  exp: "Statement coverage = (number of executed statements / total executable statements) × 100. Here: (7 / 10) × 100 = 70%.",
+  ref: "CTFL v4.0 Syllabus §4.3.1"
+},
+{
+  id: 24, topic: "4.3", subtopic: "Statement Testing",
+  q: "What does 100% statement coverage guarantee about the test suite?",
+  opts: [
+    "Every branch (decision outcome) has been tested",
+    "Every executable statement has been executed at least once",
+    "All defects in the code have been found",
+    "Every path through the code has been tested"
+  ],
+  ans: 1,
+  exp: "100% statement coverage guarantees only that every executable statement has been executed at least once. It does NOT guarantee branch or path coverage. For example, a conditional statement could have its 'false' branch untested even at 100% statement coverage.",
+  ref: "CTFL v4.0 Syllabus §4.3.1"
+},
+{
+  id: 25, topic: "4.3", subtopic: "Branch Testing",
+  q: "In branch testing (also called decision testing), what constitutes a 'branch'?",
+  opts: [
+    "Any executable statement in the code",
+    "A loop construct such as for/while",
+    "A transfer of control from one node to another in the control flow graph",
+    "Any method or function call"
+  ],
+  ans: 2,
+  exp: "In branch testing, a branch is a transfer of control between two nodes in the control flow graph, such as the true and false outcomes of a conditional decision (if/else), or an unconditional jump. Both the true and false branches of every decision must be executed.",
+  ref: "CTFL v4.0 Syllabus §4.3.2"
+},
+{
+  id: 26, topic: "4.3", subtopic: "Branch Testing",
+  q: "Consider: IF (A > 0) THEN action1 ELSE action2. What is the MINIMUM number of test cases needed to achieve 100% branch coverage?",
+  opts: ["1", "2", "3", "4"],
+  ans: 1,
+  exp: "For 100% branch coverage, both outcomes of each decision must be exercised. The IF statement has two branches: true (A > 0, execute action1) and false (A ≤ 0, execute action2). Therefore, a minimum of 2 test cases are required.",
+  ref: "CTFL v4.0 Syllabus §4.3.2"
+},
+{
+  id: 27, topic: "4.3", subtopic: "Statement vs Branch Coverage",
+  q: "Which statement about the relationship between statement and branch coverage is CORRECT?",
+  opts: [
+    "100% statement coverage always implies 100% branch coverage",
+    "100% branch coverage always implies 100% statement coverage, but not vice versa",
+    "Statement and branch coverage measure the same thing",
+    "Branch coverage is weaker than statement coverage"
+  ],
+  ans: 1,
+  exp: "Branch coverage subsumes statement coverage: achieving 100% branch coverage necessarily executes every statement (hence 100% statement coverage). But 100% statement coverage does NOT guarantee 100% branch coverage — you can execute a statement without exercising both branches of its controlling decision.",
+  ref: "CTFL v4.0 Syllabus §4.3.2"
+},
+{
+  id: 28, topic: "4.3", subtopic: "White-Box Value",
+  q: "Which of the following is a key BENEFIT of white-box testing?",
+  opts: [
+    "It can find all defects that black-box testing misses",
+    "It can measure coverage of the entire specification",
+    "It can identify code that is never executed, helping detect dead code or gaps in test coverage",
+    "It validates the system against user requirements directly"
+  ],
+  ans: 2,
+  exp: "A key benefit of white-box testing is the ability to measure structural coverage — including identifying code that is never executed by any test (dead code). This reveals gaps in test coverage that are invisible from purely specification-based testing.",
+  ref: "CTFL v4.0 Syllabus §4.3"
+},
+{
+  id: 29, topic: "4.3", subtopic: "White-Box Overview",
+  q: "White-box techniques CAN be applied at which test levels?",
+  opts: [
+    "Unit (component) testing only",
+    "Integration testing only",
+    "System testing only",
+    "Any test level — unit, integration, system, or acceptance"
+  ],
+  ans: 3,
+  exp: "A common misconception is that white-box applies only to unit testing. CTFL v4.0 clarifies that white-box techniques can be applied at ANY test level wherever the internal structure is available — including integration (structure of interfaces) and system level (architecture). The key is availability of structural information.",
+  ref: "CTFL v4.0 Syllabus §4.3"
+}
+];
+
+// ════════════════════════════════════════════════
+//  STATE
+// ════════════════════════════════════════════════
+let questions = [];
+let currentQ = 0;
+let answers = {};   // index → chosen option index
+let mode = 'all';
+let timerInterval = null;
+let secondsLeft = 0;
+let reviewMode = false;
+
+// ════════════════════════════════════════════════
+//  HOME / MODE
+// ════════════════════════════════════════════════
+function selectMode(m) {
+  mode = m;
+  document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function startQuiz() {
+  reviewMode = false;
+  answers = {};
+  currentQ = 0;
+
+  if (mode === 'all') questions = [...BANK];
+  else questions = BANK.filter(q => q.topic === mode);
+
+  // shuffle
+  for (let i = questions.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [questions[i], questions[j]] = [questions[j], questions[i]];
+  }
+
+  secondsLeft = questions.length * 90; // ~90s per question
+  startTimer();
+  buildMiniMap();
+  showScreen('quiz');
+  renderQ();
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ════════════════════════════════════════════════
+//  TIMER
+// ════════════════════════════════════════════════
+function startTimer() {
+  clearInterval(timerInterval);
+  updateTimerDisplay();
+  timerInterval = setInterval(() => {
+    secondsLeft--;
+    updateTimerDisplay();
+    if (secondsLeft <= 0) { clearInterval(timerInterval); submitQuiz(); }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('timer');
+  const m = Math.floor(secondsLeft / 60).toString().padStart(2,'0');
+  const s = (secondsLeft % 60).toString().padStart(2,'0');
+  el.textContent = m + ':' + s;
+  el.className = 'timer-pill';
+  if (secondsLeft < 60) el.classList.add('danger');
+  else if (secondsLeft < 180) el.classList.add('warn');
+}
+
+// ════════════════════════════════════════════════
+//  MINI MAP
+// ════════════════════════════════════════════════
+function buildMiniMap() {
+  const container = document.getElementById('q-map-mini');
+  container.innerHTML = '';
+  questions.forEach((_, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'q-dot unanswered';
+    dot.textContent = i + 1;
+    dot.onclick = () => { currentQ = i; renderQ(); };
+    container.appendChild(dot);
+  });
+}
+
+function updateMiniMap() {
+  const dots = document.getElementById('q-map-mini').querySelectorAll('.q-dot');
+  dots.forEach((dot, i) => {
+    dot.className = 'q-dot';
+    if (answers[i] !== undefined) {
+      dot.classList.add(answers[i] === questions[i].ans ? 'correct' : 'wrong');
+    } else {
+      dot.classList.add('unanswered');
+    }
+    if (i === currentQ) dot.style.outline = '2px solid var(--accent)';
+    else dot.style.outline = 'none';
+  });
+}
+
+// ════════════════════════════════════════════════
+//  RENDER QUESTION
+// ════════════════════════════════════════════════
+function renderQ() {
+  const q = questions[currentQ];
+
+  // Tag
+  const tagEl = document.getElementById('q-tag');
+  tagEl.textContent = '§ ' + q.topic;
+  tagEl.className = 'q-tag t' + q.topic.replace('.','');
+
+  document.getElementById('q-subtopic').textContent = q.subtopic;
+  document.getElementById('q-number').textContent = 'Q' + (currentQ + 1) + ' / ' + questions.length;
+
+  // Progress
+  document.getElementById('progress-label').textContent = 'Q ' + (currentQ + 1) + ' / ' + questions.length;
+  document.getElementById('progress-fill').style.width = ((currentQ + 1) / questions.length * 100) + '%';
+
+  document.getElementById('q-text').textContent = q.q;
+
+  const optContainer = document.getElementById('options');
+  optContainer.innerHTML = '';
+  const letters = ['A','B','C','D'];
+
+  const answered = answers[currentQ] !== undefined;
+  q.opts.forEach((opt, i) => {
+    const div = document.createElement('div');
+    div.className = 'option' + (answered ? ' disabled' : '');
+    if (answered) {
+      if (i === q.ans) div.classList.add('correct');
+      else if (i === answers[currentQ]) div.classList.add('wrong');
+    } else if (answers[currentQ] === i) {
+      div.classList.add('selected');
+    }
+    div.innerHTML = `<span class="opt-letter">${letters[i]}</span><span class="opt-text">${opt}</span>`;
+    if (!answered && !reviewMode) div.onclick = () => selectAnswer(i);
+    optContainer.appendChild(div);
+  });
+
+  // Explanation
+  const expEl = document.getElementById('explanation');
+  if (answered || reviewMode) {
+    document.getElementById('explanation-text').innerHTML = q.exp;
+    document.getElementById('syllabus-ref').textContent = '📚 ' + q.ref;
+    expEl.style.display = 'block';
+    expEl.style.borderLeftColor = answers[currentQ] === q.ans ? 'var(--accent3)' : 'var(--danger)';
+  } else {
+    expEl.style.display = 'none';
+  }
+
+  // Next button label
+  const nextBtn = document.getElementById('next-btn');
+  nextBtn.textContent = currentQ === questions.length - 1 ? 'Submit ✓' : 'Next →';
+
+  updateMiniMap();
+}
+
+function selectAnswer(i) {
+  answers[currentQ] = i;
+  renderQ();
+}
+
+function prevQ() {
+  if (currentQ > 0) { currentQ--; renderQ(); }
+}
+
+function nextOrSubmit() {
+  if (currentQ < questions.length - 1) {
+    currentQ++;
+    renderQ();
+  } else {
+    submitQuiz();
+  }
+}
+
+// ════════════════════════════════════════════════
+//  SUBMIT & RESULTS
+// ════════════════════════════════════════════════
+function submitQuiz() {
+  clearInterval(timerInterval);
+  const total = questions.length;
+  let correct = 0, wrong = 0, skip = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === undefined) skip++;
+    else if (answers[i] === q.ans) correct++;
+    else wrong++;
+  });
+
+  const pct = Math.round((correct / total) * 100);
+  document.getElementById('score-pct').textContent = pct + '%';
+  document.getElementById('results-sub').textContent = correct + ' correct out of ' + total + ' questions';
+  document.getElementById('r-correct').textContent = correct;
+  document.getElementById('r-wrong').textContent = wrong;
+  document.getElementById('r-skip').textContent = skip;
+
+  // SVG ring
+  const circumference = 427;
+  const offset = circumference - (pct / 100) * circumference;
+  setTimeout(() => {
+    document.getElementById('score-arc').style.strokeDashoffset = offset;
+    const color = pct >= 65 ? 'var(--accent3)' : pct >= 50 ? 'var(--accent2)' : 'var(--danger)';
+    document.getElementById('score-arc').style.stroke = color;
+  }, 200);
+
+  // Pass/fail banner
+  const banner = document.getElementById('pass-banner');
+  const passThreshold = Math.ceil(total * 0.65);
+  if (correct >= passThreshold) {
+    banner.className = 'pass-banner pass';
+    banner.textContent = '✓ PASSED — ' + correct + '/' + total + ' (' + pct + '%)';
+  } else {
+    banner.className = 'pass-banner fail';
+    banner.textContent = '✗ NOT PASSED — Need ' + passThreshold + '/' + total + ' (' + Math.round(passThreshold/total*100) + '%) to pass';
+  }
+
+  // Topic breakdown
+  const topics = ['4.1','4.2','4.3'];
+  const topicColors = { '4.1': 'var(--tag-41)', '4.2': 'var(--tag-42)', '4.3': 'var(--tag-43)' };
+  const topicNames = { '4.1': '§4.1 Overview', '4.2': '§4.2 Black-Box', '4.3': '§4.3 White-Box' };
+  const rowsEl = document.getElementById('topic-rows');
+  rowsEl.innerHTML = '';
+  topics.forEach(t => {
+    const tQs = questions.filter(q => q.topic === t);
+    if (tQs.length === 0) return;
+    const tCorrect = tQs.filter((q, qi) => {
+      const globalIdx = questions.indexOf(q);
+      return answers[globalIdx] === q.ans;
+    }).length;
+    const tPct = Math.round(tCorrect / tQs.length * 100);
+    rowsEl.innerHTML += `
+      <div class="topic-row">
+        <div class="topic-row-label" style="color:${topicColors[t]}">${topicNames[t]}</div>
+        <div class="topic-bar-wrap"><div class="topic-bar-fill" style="width:0%;background:${topicColors[t]}" data-w="${tPct}"></div></div>
+        <div class="topic-row-pct" style="color:${topicColors[t]}">${tPct}%</div>
+      </div>`;
+  });
+  setTimeout(() => {
+    document.querySelectorAll('.topic-bar-fill').forEach(b => b.style.width = b.dataset.w + '%');
+  }, 300);
+
+  // Results map
+  const mapEl = document.getElementById('q-map-results');
+  mapEl.innerHTML = '';
+  questions.forEach((q, i) => {
+    const dot = document.createElement('div');
+    dot.className = 'q-dot ' + (answers[i] === undefined ? 'unanswered' : answers[i] === q.ans ? 'correct' : 'wrong');
+    dot.textContent = i + 1;
+    dot.title = 'Q' + (i+1) + ': ' + (answers[i] === undefined ? 'Skipped' : answers[i] === q.ans ? 'Correct' : 'Incorrect');
+    dot.onclick = () => { currentQ = i; reviewMode = true; showScreen('quiz'); renderQ(); };
+    mapEl.appendChild(dot);
+  });
+
+  showScreen('results');
+}
+
+function reviewQuiz() {
+  reviewMode = true;
+  currentQ = 0;
+  showScreen('quiz');
+  renderQ();
+}
+
+function goHome() {
+  clearInterval(timerInterval);
+  answers = {};
+  currentQ = 0;
+  reviewMode = false;
+  showScreen('home');
+}
+</script>
+</body>
+</html>
